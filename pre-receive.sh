@@ -30,7 +30,7 @@ while read oldref newref refname; do
       echo ""
       echo "-------------------------------------------------------------------------"
       echo "Your push was rejected because it contains files larger than $maxsize MB."
-      echo "Please discuss with the infra team the best place to store these files."
+      echo "Please discuss with the Anas the best place to store these files."
       echo "You might want to consider using https://git-lfs.github.com/ instead."
       echo "-------------------------------------------------------------------------"
       echo
@@ -39,6 +39,38 @@ while read oldref newref refname; do
 
     echo " - $file"
   done
+
+  #Find missed filetype
+
+
+  # Check for new branch or tag
+  if [ "$oldrev" = "$zero_commit" ]; then
+    span=`git rev-list $newrev $excludeExisting`
+  else
+    span=`git rev-list $oldrev..$newrev $excludeExisting`
+  fi
+
+  for COMMIT in $span;
+  do
+    for FILE  in `git log -1 --name-only --pretty=format:'' $COMMIT`;
+    do
+      case $FILE in
+      *.apk|*.ipa)
+        echo "-------------------------------------------------------------------------"
+        echo "Hello there! We have restricted committing that filetype($FILE). Please see Anas in IT to discuss alternatives."
+        echo "-------------------------------------------------------------------------"
+        status= 1
+        ;;
+      esac
+    done
+  done
+
+  
+
+  
+
+
+
 done
 
 if [ "$status" -ne "0" ]; then echo; fi

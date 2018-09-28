@@ -26,28 +26,25 @@ while read oldref newref refname; do
     # Display error header if this is the first offending file
     if [ "$status" -eq "0" ]; then
       status=1
-
-      echo ""
       echo "-------------------------------------------------------------------------"
       echo "Your push was rejected because it contains files larger than $maxsize MB."
-      echo "Please discuss with the Anas the best place to store these files."
+      echo "Please discuss with the Admin the best place to store these files."
       echo "You might want to consider using https://git-lfs.github.com/ instead."
       echo "-------------------------------------------------------------------------"
-      echo
       echo "Offending files:"
     fi
 
     echo " - $file"
   done
 
-  #Find missed filetype
+  excludeExisting="--not --all"
 
 
   # Check for new branch or tag
-  if [ "$oldrev" = "$zero_commit" ]; then
-    span=`git rev-list $newrev $excludeExisting`
+  if [ "$oldref" = "$nullsha" ]; then
+    span=`git rev-list $newref $excludeExisting`
   else
-    span=`git rev-list $oldrev..$newrev $excludeExisting`
+    span=`git rev-list $oldref..$newref $excludeExisting`
   fi
 
   for COMMIT in $span;
@@ -56,20 +53,19 @@ while read oldref newref refname; do
     do
       case $FILE in
       *.apk|*.ipa)
-        echo "-------------------------------------------------------------------------"
-        echo "Hello there! We have restricted committing that filetype($FILE). Please see Anas in IT to discuss alternatives."
-        echo "-------------------------------------------------------------------------"
-        status= 1
+      status=1
+      echo "-------------------------------------------------------------------------"
+      echo "Your push was rejected because it contains restricted file type "
+      echo "Please donot commit build files(ipa/apk) to git "
+      echo "You might want to consider adding build folder in ignore list. Contact admin for more info"
+      echo "-------------------------------------------------------------------------"
+      echo "Offending files: $FILE"
         ;;
       esac
     done
   done
 
   
-
-  
-
-
 
 done
 

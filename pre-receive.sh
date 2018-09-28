@@ -59,9 +59,10 @@ while read oldref newref refname; do
       echo "Please donot commit build files(ipa/apk) to git "
       echo "You might want to consider adding build folder in ignore list. Contact admin for more info"
       echo "-------------------------------------------------------------------------"
-      echo "Offending files: $FILE"
+      echo "Offending files:"
         ;;
       esac
+      echo -n $FILE
     done
   done
 
